@@ -18,11 +18,17 @@ $(document).ready(function () {
         if (visitedParks.length > 0) {
             let parkElems = $("<div>");
             visitedParks.forEach(park => {
-                let entry = $("<h1>").text(park);
+                let entry = $("<h1>").text(park)
+                .addClass("hoverclick");
                 parkElems.append(entry);
             });
             $("#data").empty().append(parkElems);
         }
+    });
+    $("#data").on('click', '.hoverclick', (e) => {
+        let clickedName = e.currentTarget.textContent;
+        console.log(clickedName);
+        fetchUrl(clickedName);
     })
 
 });
@@ -54,4 +60,21 @@ function createDropDown(parksArr) {
             "value=" + parksArr[i].replace(/\s/g, "") + ">" + parksArr[i] + "</label><br>";
     }
     return parksDropDown;
+}
+
+function fetchUrl(parkName){
+const url = "https://developer.nps.gov/api/v1/parks";
+const api_key = "4pyAvwLGdhtnYuVqa2zyMdeF43XOqbsyCaO8AwsN";
+const queryURL = url + "?q=" + parkName + "&api_key=" + api_key + "&limit=1";
+const queryURL2 = `${url}?q=${parkName}&api_key=${api_key}`;
+// https://developer.nps.gov/api/v1/parks?q=Denali&api_key=4pyAvwLGdhtnYuVqa2zyMdeF43XOqbsyCaO8AwsN
+$.ajax({
+    url: queryURL,
+    method: "GET"
+}).then(response => {
+    console.log(response);
+    // if(response.status="OK"){
+    //     console
+    // }
+});
 }
