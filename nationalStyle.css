@@ -3,3 +3,19 @@ body {
     background-repeat: no-repeat;
 }
 
+.check-choice {
+    /* display: inline; */
+    margin: 1em;
+}
+
+.hoverclick:hover{
+    background: rgb(204, 43, 43);
+    border-radius: .5em;
+    color:white;
+}
+
+.hoverclick{
+    width: fit-content;
+    padding: .5px .6em;
+}
+

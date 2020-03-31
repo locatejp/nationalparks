@@ -1,3 +1,4 @@
+
 $(document).ready(function () {
     parksArr.sort();
     let parksDropDown = createDropDown(parksArr);
@@ -10,8 +11,8 @@ $(document).ready(function () {
         e.preventDefault();
         console.log(e);
         let visitedParks = [];
-        $.each($("input:checked"), function () {
-            visitedParks.push($(this).val());
+        $.each($("input:checked").parent(), function () {
+            visitedParks.push($(this).text());
             console.log(this);
         });
         console.log(visitedParks);
@@ -23,13 +24,21 @@ $(document).ready(function () {
                 parkElems.append(entry);
             });
             $("#data").empty().append(parkElems);
+            $("html, body").animate({ scrollTop: $(document).height() }, 1000);
         }
     });
     $("#data").on('click', '.hoverclick', (e) => {
         let clickedName = e.currentTarget.textContent;
         console.log(clickedName);
-        fetchUrl(clickedName);
-    })
+        let parkKey = false;
+        for (var key in parkLib) {
+            if (key.indexOf(clickedName) >= 0){
+                parkKey = parkLib[key];
+                break;
+            }
+        }
+        parkKey ? fetchUrl(parkKey): alert("National Park not found in database :(");
+    });
 
 });
 
@@ -56,25 +65,30 @@ function createDropDown(parksArr) {
         // let elem = $('<label>').html(parksArr[i]).append($('<input>').attr({type: "checkbox", value: parksArr[i].replace(/\s/g, "")}));
         // console.log(elem)
         // parksDropDown.append(elem);
-        parksDropDown += "<label><input type=\"checkbox\" name=" + parksArr[i].replace(/\s/g, "") + " " +
-            "value=" + parksArr[i].replace(/\s/g, "") + ">" + parksArr[i] + "</label><br>";
+        parksDropDown += "<label class=\"checkbox-inline check-choice\"><input type=\"checkbox\" name=" + parksArr[i].replace(/\s/g, "") + " " +
+            "value=" + parksArr[i].replace(/\s/g, "") +">" + parksArr[i] + "</label>";
     }
     return parksDropDown;
 }
 
-function fetchUrl(parkName){
+function fetchUrl(parkKey){
 const url = "https://developer.nps.gov/api/v1/parks";
 const api_key = "4pyAvwLGdhtnYuVqa2zyMdeF43XOqbsyCaO8AwsN";
-const queryURL = url + "?q=" + parkName + "&api_key=" + api_key + "&limit=1";
-const queryURL2 = `${url}?q=${parkName}&api_key=${api_key}`;
+const queryURL = url + "?parkCode=" + parkKey +
+"&fields=entranceFees,images,standardHours&api_key=" + api_key + "&limit=1";
+//const queryURL2 = `${url}?q=${parkName}&api_key=${api_key}`;
 // https://developer.nps.gov/api/v1/parks?q=Denali&api_key=4pyAvwLGdhtnYuVqa2zyMdeF43XOqbsyCaO8AwsN
 $.ajax({
     url: queryURL,
     method: "GET"
 }).then(response => {
-    console.log(response);
-    // if(response.status="OK"){
-    //     console
-    // }
+    
+    if(response.status="OK"){
+        console.log(response);
+        console.log("Full name: " + response.data[0].fullName);
+        console.log(response.data[0].images.length + " images available");
+    } else {
+        console.log("API call failed");
+    }
 });
 }
